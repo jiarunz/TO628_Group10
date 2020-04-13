@@ -26,6 +26,8 @@ last_half_year_rw <- ifelse(as.Date(airbnb$last_review)>as.Date("2019-01-07"),1,
 last_half_year_rw <- ifelse(is.na(last_half_year_rw),0,last_half_year_rw)
 airbnb$last_review <- last_half_year_rw
 airbnb$last_review <- as.factor(airbnb$last_review)
+airbnb$neighbourhood <- as.factor(airbnb$neighbourhood)
+airbnb$room_type <- as.factor(airbnb$room_type)
 summary(last_half_year_rw)
 str(last_half_year_rw)
 
