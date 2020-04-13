@@ -25,6 +25,7 @@ airbnb <- subset(airbnb,airbnb$neighbourhood==manhattan_five)
 last_half_year_rw <- ifelse(as.Date(airbnb$last_review)>as.Date("2019-01-07"),1,0)
 last_half_year_rw <- ifelse(is.na(last_half_year_rw),0,last_half_year_rw)
 airbnb$last_review <- last_half_year_rw
+airbnb$last_review <- as.factor(airbnb$last_review)
 summary(last_half_year_rw)
 str(last_half_year_rw)
 
