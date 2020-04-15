@@ -33,3 +33,12 @@ str(last_half_year_rw)
 
 str(airbnb)
 View(airbnb)
+
+# Split Data into Training and Testing in R 
+sample_size = floor(0.8*nrow(airbnb))
+set.seed(666)
+
+# randomly split data in r
+picked = sample(seq_len(nrow(airbnb)),size = sample_size)
+train =airbnb[picked,]
+test =airbnb[-picked,]
