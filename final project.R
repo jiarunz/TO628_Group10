@@ -31,8 +31,13 @@ View(airbnb)
 
 #GGplot for price
 library(ggplot2)
-price_plot <- ggplot(data=airbnb, aes(x=price)) + geom_histogram(fill = "red")
-price_plot
+ggplot(airbnb, aes(price)) + 
+  geom_histogram(aes(y = ..density..)) + 
+  geom_density() + 
+  ggtitle("Price Distribution") + 
+            geom_vline(xintercept = mean(airbnb$price))+ scale_x_log10()
+#Mean value
+mean(airbnb$price)
 
 # Split Data into Training and Testing in R 
 train =airbnb[1:1695,]
