@@ -31,7 +31,7 @@ View(airbnb)
 
 #GGplot for price
 library(ggplot2)
-price_plot <- ggplot(airbnb, aes(x=price)) + geom_histogram(fill="red")
+price_plot <- ggplot(data=airbnb, aes(x=price)) + geom_histogram(fill = "red")
 price_plot
 
 # Split Data into Training and Testing in R 
