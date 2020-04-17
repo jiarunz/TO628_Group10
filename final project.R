@@ -42,3 +42,30 @@ mean(airbnb$price)
 # Split Data into Training and Testing in R 
 train =airbnb[1:1695,]
 test =airbnb[1696:2119,]
+
+# Linear Regression Model
+linear_model <- lm(price ~ neighbourhood + room_type  + number_of_reviews 
+                   + last_review + reviews_per_month + availability_365, 
+                   data=train)
+summary(linear_model)
+linear_pred <- predict(linear_model,test)
+g=mean((linear_pred - test$price)^2)
+print(c("linear-pred",g))
+
+# SVM Model
+library(kernlab)
+SVM_pred <- ksvm(price ~ neighbourhood + room_type + number_of_reviews 
+                 + last_review + reviews_per_month + availability_365, 
+                 data=train, kernel = "vanilladot")
+SVM_Price_Pred <- predict(SVM_pred, test)
+g=mean((SVM_Price_Pred - test$price)^2)
+print(c("SVM-pred",g))
+
+# SVR Model (SVM for numeric variables)
+library(e1071)
+svr <- svm(price ~ neighbourhood + room_type + number_of_reviews 
+           + last_review + reviews_per_month + availability_365, 
+           data=train)
+svr_pred <- predict(svr,test)
+g=mean((svr_pred - test$price)^2)
+
