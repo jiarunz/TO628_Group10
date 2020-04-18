@@ -70,3 +70,62 @@ svr <- svm(price ~ neighbourhood + room_type + number_of_reviews
 svr_pred <- predict(svr,test)
 g=mean((svr_pred - test$price)^2)
 print(c("SVR-pred",g))
+
+
+# Neural Network
+## Create dummy variables for neighbourhood and room_type
+#install.packages("dummies")
+library(dummies)
+
+airbnb$last_review <- unclass(airbnb$last_review)
+airbnb_dummies <- dummy.data.frame(airbnb, sep = "_")
+# remove space in column names
+names(airbnb_dummies) <- gsub(" ", "_", names(airbnb_dummies))
+names(airbnb_dummies) <- gsub("'", "", names(airbnb_dummies))
+names(airbnb_dummies) <- gsub("/", "", names(airbnb_dummies))
+summary(airbnb_dummies)
+
+# custom normalization function
+normalize <- function(x) { 
+  return((x - min(x)) / (max(x) - min(x)))
+}
+# apply normalization to entire data frame
+airbnb_dummies_norm <- as.data.frame(lapply(airbnb_dummies, normalize))
+
+train_nn =airbnb_dummies_norm[1:1695,]
+test_nn =airbnb_dummies_norm[1696:2119,]
+
+
+
+# Neural Network Model
+# train the neuralnet model
+library(neuralnet)
+
+# a more complex neural network topology 2,1 hidden neurons
+
+nn_model3 <- neuralnet(formula = price ~., data=train_nn, hidden=c(6), linear.output=FALSE, threshold=0.01)
+
+
+## Step 4: Evaluating model performance ----
+# obtain model results
+nn_model_results3 <- compute(nn_model3, subset(test_nn, select = -c(price)))
+
+# obtain predicted strength values
+nn_predicted_price3 <- nn_model_results3$net.result
+# examine the correlation between predicted and actual values
+cor3 = cor(nn_predicted_price3, test_nn$price)[1,1]
+RMSE.NN3 = (sum((test_nn$price - nn_predicted_price3)^2) / nrow(test_nn)) ^ 0.5
+
+convert_price <- function(x) { 
+  return (x * (max(airbnb_dummies$price) - min(airbnb_dummies$price))+min(airbnb_dummies$price))
+}
+
+## RMSE result
+Best_adjusted_RMSE = (sum((convert_price(test_nn$price) - convert_price(nn_predicted_price3))^2) / nrow(test_nn)) ^ 0.5
+
+#install.packages('NeuralNetTools')
+library(ggplot2)
+nn_feature_imp <- garson(nn_model3) + coord_flip()
+
+## Feature Importance chart
+nn_feature_imp
