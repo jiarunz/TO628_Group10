@@ -155,7 +155,7 @@ convert_price <- function(x) {
 Best_adjusted_RMSE = (sum((convert_price(test_nn$price) - convert_price(nn_predicted_price3))^2) / nrow(test_nn)) ^ 0.5
 
 #install.packages('NeuralNetTools')
-library(ggplot2)
+library(NeuralNetTools)
 nn_feature_imp <- garson(nn_model3) + coord_flip()
 
 ## Feature Importance chart
