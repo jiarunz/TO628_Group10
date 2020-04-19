@@ -1,4 +1,35 @@
 airbnb <- read.csv("AB_NYC_2019.csv")
+library(ggplot2)
+
+#The distribution of New York display on map
+ggplot(airbnb,aes(x=longitude,y=latitude))+ 
+  geom_point(aes(colour = factor(neighbourhood_group)), alpha = 0.3) + 
+  scale_colour_manual(name = "Distribution", values = c("orange", "skyblue", "pink", "lightgreen", "red"))
+
+#We can see most of the airbnb concentrate in two areas, Manhattan and Brooklyn  
+plot(airbnb$neighbourhood_group,
+     main="Distribution of neighborhood in NY",
+     col=c("orange", "skyblue", "pink", "lightgreen", "red")
+     
+#Most of airbnb are entire home or apartment
+theme_set(theme_classic())
+g <- ggplot(airbnb, aes(neighbourhood_group))
+g + geom_bar(aes(fill=room_type), width = 0.5) + 
+  theme(axis.text.x = element_text(angle=55, vjust=0.6)) +
+  labs(title="Histogram on Room type Variable", 
+       subtitle="Most of them are entire home or apartment")
+     
+#This is the brief summary about the price distribution of different areas
+ggplot(airbnb, aes(x = price, fill = neighbourhood_group)) +
+  geom_histogram(bins = 50) +
+  scale_x_log10() + 
+  ggtitle("Summary of price distributions") +
+  facet_wrap(~ neighbourhood_group)
+     
+#The distribution of room type
+ggplot(airbnb,aes(x=longitude,y=latitude))+ 
+  geom_point(aes(colour = factor(room_type)), alpha = 0.3) + 
+  scale_colour_manual(name = "Distribution of room type", values = c("orange", "skyblue", "red"))
 
 #Clean data
 airbnb$id <- NULL
@@ -30,7 +61,7 @@ str(airbnb)
 View(airbnb)
 
 #GGplot for price
-library(ggplot2)
+#library(ggplot2)
 ggplot(airbnb, aes(price)) + 
   geom_histogram(aes(y = ..density..)) + 
   geom_density() + 
