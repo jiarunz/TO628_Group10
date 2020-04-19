@@ -6,12 +6,8 @@ ggplot(airbnb,aes(x=longitude,y=latitude))+
   geom_point(aes(colour = factor(neighbourhood_group)), alpha = 0.3) + 
   scale_colour_manual(name = "Distribution", values = c("orange", "skyblue", "pink", "lightgreen", "red"))
 
-#We can see most of the airbnb concentrate in two areas, Manhattan and Brooklyn  
-plot(airbnb$neighbourhood_group,
-     main="Distribution of neighborhood in NY",
-     col=c("orange", "skyblue", "pink", "lightgreen", "red"))
      
-#Most of them are entire home or apartment
+#Most of airbnb are in Manhattan and Brooklyn, and lots of their room type is entire home or apartment
 theme_set(theme_classic())
 g <- ggplot(airbnb, aes(neighbourhood_group))
 g + geom_bar(aes(fill=room_type), width = 0.5) + 
