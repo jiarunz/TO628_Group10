@@ -99,13 +99,19 @@ svr_pred <- predict(svr,test)
 svr_RMSE=sqrt(mean((svr_pred - test$price)^2))
 print(c("SVR-pred",svr_RMSE))
 cor(SVR_Price_Pred,test$price)
-
+## Which factor has the biggest impact
 cat('SVR model case:\n')
 w <- t(svr$coefs) %*% svr$SV
 w <- apply(w, 2, function(v){v})
 w <- sort(w, decreasing = T)
 print(w)
-
+barplot(w,names.arg=c("listings", "availability", 
+                      "East Village", "Hell's Kitchen", 
+                      "West side","reveiws/month","East side",
+                      "last review","Harlem","review number",
+                      "shared room","private room"),
+        ylab="coefficient", col=ifelse(abs(w)==max(abs(w)),"orange",
+                                 "light blue"),las=2)
 
 # Neural Network
 ## Create dummy variables for neighbourhood and room_type
