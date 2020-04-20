@@ -156,3 +156,44 @@ nn_feature_imp <- garson(nn_model3) + coord_flip()
 
 ## Feature Importance chart
 nn_feature_imp
+
+
+# Random Forest Model
+# install.packages("randomForest")
+library(randomForest)
+train_rf <- train[-1]
+rf_classifier <- randomForest(x = train_rf[-3],
+                              y = train_rf$price,
+                              ntree = 500)
+rf_classifier
+
+#importance(rf_classifier)
+#varImpPlot(rf_classifier)
+library(dplyr)
+var_importance <- data_frame(variable=setdiff(colnames(train_rf[-3]), "price"),
+                             importance=as.vector(importance(rf_classifier)))
+var_importance <- arrange(var_importance, desc(importance))
+var_importance$variable <- factor(var_importance$variable, levels=var_importance$variable)
+
+p <- ggplot(var_importance, aes(x=variable, weight=importance, fill=variable))
+p <- p + geom_bar() + ggtitle("Variable Importance from Random Forest Fit")
+p <- p + xlab("Demographic Attribute") + ylab("Variable Importance (Mean Decrease in Gini Index)")
+p <- p + scale_fill_discrete(name="Variable Name")
+p + theme(axis.text.x=element_blank(),
+          axis.text.y=element_text(size=10),
+          axis.title=element_text(size=11),
+          plot.title=element_text(size=18),
+          legend.title=element_text(size=16),
+          legend.text=element_text(size=10))
+
+# Accuracy of the data
+rf_pred <- predict(rf_classifier, newdata = test[-4])
+
+df = data.frame(round(test$price,0), round(rf_pred,0))
+colnames(df)<-c("Actual", "Prediction")
+library(knitr)
+kable(df,caption = "Actual and Prediction")
+
+# RMSE
+RMSE <- sqrt(mean((rf_pred - test$price)^2))
+RMSE
