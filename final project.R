@@ -79,6 +79,13 @@ linear_pred <- predict(linear_model,test)
 linear_RMSE=sqrt(mean((linear_pred - test$price)^2))
 print(c("linear-pred",linear_RMSE))
 cor(linear_pred,test$price)
+library(caret)
+LM_Importance <- varImp(linear_model)
+par(mar=c(6.8, 4.1, 4.1, 2.1))
+barplot(LM_Importance$Overall,names.arg=c("Harlem","Hell's Kitchen","East side",
+                                          "West side","private room","shared room",
+                                          "review number","last review","review/month","availability")
+        , col=ifelse(LM_Importance$Overall==max(LM_Importance$Overall),"orange", "light blue"),las=2)
 
 # SVM Model
 library(kernlab)
