@@ -76,27 +76,35 @@ linear_model <- lm(price ~ neighbourhood + room_type  + number_of_reviews
                    data=train)
 summary(linear_model)
 linear_pred <- predict(linear_model,test)
-corlm <- cor(linear_pred,test$price)
-RMSE.LM=(sum((linear_pred - test$price)^2)/nrow(test)) ^ 0.5
-RMSE.LM
+linear_RMSE=sqrt(mean((linear_pred - test$price)^2))
+print(c("linear-pred",linear_RMSE))
+cor(linear_pred,test$price)
 
 # SVM Model
 library(kernlab)
 SVM_pred <- ksvm(price ~ neighbourhood + room_type + number_of_reviews 
                  + last_review + reviews_per_month + calculated_host_listings_count + availability_365, 
-                 data=train, kernel = "besseldot")
+                 data=train, kernel = "vanilladot")
 SVM_Price_Pred <- predict(SVM_pred, test)
-RMSE.SVM=(sum((SVM_Price_Pred - test$price)^2)/nrow(test)) ^ 0.5
-RMSE.SVM
+SVM_RMSE=sqrt(mean((SVM_Price_Pred - test$price)^2))
+print(c("SVM-pred",SVM_RMSE))
+cor(SVM_Price_Pred,test$price)
 
 # SVR Model (SVM for numeric variables)
 library(e1071)
 svr <- svm(price ~ neighbourhood + room_type + number_of_reviews 
-           + last_review + reviews_per_month + calculated_host_listings_count + availability_365, 
-           data=train)
+           + last_review + reviews_per_month + calculated_host_listings_count + availability_365,
+           data=train, kernel="radial")
 svr_pred <- predict(svr,test)
-RMSE.SVR = (sum((svr_pred - test$price)^2)/nrow(test)) ^ 0.5
-RMSE.SVR
+svr_RMSE=sqrt(mean((svr_pred - test$price)^2))
+print(c("SVR-pred",svr_RMSE))
+cor(SVR_Price_Pred,test$price)
+
+cat('SVR model case:\n')
+w <- t(svr$coefs) %*% svr$SV
+w <- apply(w, 2, function(v){v})
+w <- sort(w, decreasing = T)
+print(w)
 
 
 # Neural Network
@@ -156,44 +164,3 @@ nn_feature_imp <- garson(nn_model3) + coord_flip()
 
 ## Feature Importance chart
 nn_feature_imp
-
-
-# Random Forest Model
-# install.packages("randomForest")
-library(randomForest)
-train_rf <- train[-1]
-rf_classifier <- randomForest(x = train_rf[-3],
-                              y = train_rf$price,
-                              ntree = 500)
-rf_classifier
-
-#importance(rf_classifier)
-#varImpPlot(rf_classifier)
-library(dplyr)
-var_importance <- data_frame(variable=setdiff(colnames(train_rf[-3]), "price"),
-                             importance=as.vector(importance(rf_classifier)))
-var_importance <- arrange(var_importance, desc(importance))
-var_importance$variable <- factor(var_importance$variable, levels=var_importance$variable)
-
-p <- ggplot(var_importance, aes(x=variable, weight=importance, fill=variable))
-p <- p + geom_bar() + ggtitle("Variable Importance from Random Forest Fit")
-p <- p + xlab("Demographic Attribute") + ylab("Variable Importance (Mean Decrease in Gini Index)")
-p <- p + scale_fill_discrete(name="Variable Name")
-p + theme(axis.text.x=element_blank(),
-          axis.text.y=element_text(size=10),
-          axis.title=element_text(size=11),
-          plot.title=element_text(size=18),
-          legend.title=element_text(size=16),
-          legend.text=element_text(size=10))
-
-# Accuracy of the data
-rf_pred <- predict(rf_classifier, newdata = test[-4])
-
-df = data.frame(round(test$price,0), round(rf_pred,0))
-colnames(df)<-c("Actual", "Prediction")
-library(knitr)
-kable(df,caption = "Actual and Prediction")
-
-# RMSE
-RMSE <- sqrt(mean((rf_pred - test$price)^2))
-RMSE
