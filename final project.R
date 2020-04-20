@@ -105,6 +105,7 @@ w <- t(svr$coefs) %*% svr$SV
 w <- apply(w, 2, function(v){v})
 w <- sort(w, decreasing = T)
 print(w)
+par(mar=c(6.8, 4.1, 4.1, 2.1))
 barplot(w,names.arg=c("listings", "availability", 
                       "East Village", "Hell's Kitchen", 
                       "West side","reveiws/month","East side",
